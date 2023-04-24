@@ -67,13 +67,31 @@ paths:
                                         type: array
                                         items:
                                             type: object
-                                            allOf:
-                                                - "$ref": "#/components/schemas/Symptom"
-                                                - type: object
-                                                  properties:
-                                                      lastReportedAt:
-                                                          type: string
-                                                          example: '2020-03-04T14:39:28Z'
+                                            properties:
+                                                id:
+                                                    type: string
+                                                    format: uuid
+                                                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
+                                                code:
+                                                    type: string
+                                                    example: fatigue
+                                                displayName:
+                                                    type: string
+                                                    example: Fatigue
+                                                displayOrder:
+                                                    type: integer
+                                                    example: 3
+                                                rowCreatedAt:
+                                                    type: string
+                                                    format: date-time
+                                                    example: '2023-04-20T21:04:36Z'
+                                                rowUpdatedAt:
+                                                    type: string
+                                                    format: date-time
+                                                    example: '2023-04-20T21:04:36Z'
+                                                lastReportedAt:
+                                                    type: string
+                                                    example: '2020-03-04T14:39:28Z'
                                     dateRanges:
                                         type: object
                                         properties:
