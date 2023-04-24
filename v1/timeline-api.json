@@ -303,5 +303,14 @@
                 }
             }
         }
+    },
+    "components": {
+        "securitySchemes": {
+            "Seki Auth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
     }
 }
