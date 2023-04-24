@@ -31,6 +31,26 @@
     ],
     "paths": {
         "/tenants/{tenantId}/patients/{patientId}/timeline/metadata": {
+            "parameters": [
+                {
+                    "name": "patientId",
+                    "in": "path",
+                    "description": "ID of patient to query by",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "tenantId",
+                    "in": "path",
+                    "description": "ID of tenant patient and clinician belongs to",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
             "get": {
                 "tags": ["Timeline Metadata"],
                 "summary": "Get timeline metadata pertaining to specified patient",
