@@ -52,6 +52,8 @@
                 }
             ],
             "get": {
+                "description": "Get timeline metadata pertaining to when date ranges start/end for a patient",
+                "operationId": "getTimelineMetadata",
                 "tags": ["Timeline Metadata"],
                 "summary": "Get timeline metadata pertaining to specified patient",
                 "responses": {
@@ -286,7 +288,7 @@
                     },
                     "display_order": {
                         "type": "integer",
-                        "example": "3"
+                        "example": 3
                     },
                     "row_created_at": {
                         "type": "string",
