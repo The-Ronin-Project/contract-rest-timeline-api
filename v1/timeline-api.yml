@@ -116,8 +116,7 @@ paths:
                 - name: start
                   in: query
                   description: UTC timestamp representing the (inclusive) starting point of
-                      the date range by which to query timeline events. If not provided, the default
-                      value is exactly 30 days from now.
+                      the date range by which to query timeline events. If not provided, no lower limit will be defined.
                   required: false
                   schema:
                       type: string
@@ -126,8 +125,7 @@ paths:
                 - name: end
                   in: query
                   description: UTC timestamp representing the (exclusive) ending point of the
-                      date range by which to query timeline events. If not provided, the default
-                      value is exactly 30 days from now.
+                      date range by which to query timeline events. If not provided, no upper limit will be defined.
                   required: false
                   schema:
                       type: string
