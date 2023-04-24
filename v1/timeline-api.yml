@@ -61,31 +61,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    symptoms:
-                                        type: array
-                                        items:
-                                            type: object
-                                            allOf:
-                                                - "$ref": "#/components/schemas/Symptom"
-                                                - type: object
-                                                  properties:
-                                                      lastReportedAt:
-                                                          type: string
-                                                          example: '2020-03-04T14:39:28Z'
-                                    dateRanges:
-                                        type: object
-                                        properties:
-                                            symptoms:
-                                                type: object
-                                                properties:
-                                                    start:
-                                                        type: string
-                                                        example: '2020-03-04T14:39:28Z'
-                                                    end:
-                                                        type: string
-                                                        example: '2020-03-04T14:39:28Z'
+                                $ref: "#/components/schemas/TimelineMetadataResponse"
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
@@ -146,12 +122,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    data:
-                                        type: array
-                                        items:
-                                            "$ref": "#/components/schemas/SymptomReport"
+                                $ref: "#/components/schemas/SymptomReportResponse"
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
@@ -163,6 +134,13 @@ paths:
                     description: Unexpected error.
 components:
     schemas:
+        SymptomReportResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/SymptomReport"
         SymptomReport:
             type: object
             properties:
@@ -218,10 +196,9 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                symptom:
-                    "$ref": "#/components/schemas/Symptom"
-        Symptom:
+        SymptomWithMetadata:
             type: object
+            description: A symptom augmented with patient specific metadata
             properties:
                 id:
                     type: string
@@ -236,14 +213,29 @@ components:
                 displayOrder:
                     type: integer
                     example: 3
-                rowCreatedAt:
+                lastReportedAt:
                     type: string
-                    format: date-time
-                    example: '2023-04-20T21:04:36Z'
-                rowUpdatedAt:
-                    type: string
-                    format: date-time
-                    example: '2023-04-20T21:04:36Z'
+                    description: When the symptom was last reported for the patient
+                    example: '2020-03-04T14:39:28Z'
+        TimelineMetadataResponse:
+            type: object
+            properties:
+                symptoms:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/SymptomWithMetadata"
+                dateRanges:
+                    type: object
+                    properties:
+                        symptoms:
+                            type: object
+                            properties:
+                                start:
+                                    type: string
+                                    example: '2020-03-04T14:39:28Z'
+                                end:
+                                    type: string
+                                    example: '2020-03-04T14:39:28Z'
     securitySchemes:
         Seki:
             type: http
