@@ -86,6 +86,15 @@ paths:
                                                     end:
                                                         type: string
                                                         example: '2020-03-04T14:39:28Z'
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                5XX:
+                    description: Unexpected error.
     "/tenants/{tenantId}/patients/{patientId}/timeline/symptoms":
         parameters:
             - name: patientId
@@ -143,32 +152,13 @@ paths:
                                         type: array
                                         items:
                                             "$ref": "#/components/schemas/SymptomReport"
-                '201':
-                    description: created, response follows. Resource should be specified in
-                        the Location header
-                '204':
-                    description: success, no response (DELETE)
-                '400':
-                    description: Invalid request. Should not be retried
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
                     description: Forbidden, you sent your token and I have determined you unworthy
                 '404':
-                    description: Not found, either that resource doesn’t exist or I don’t want
+                    description: Patient or tenant not foundNot found, either that resource doesn’t exist or I don’t want
                         to tell you it does and you don’t have access
-                '405':
-                    description: wrong method, tried to PUT a POST (i.e. to collection instead
-                        of resource)
-                '409':
-                    description: failed update / replace on etag (concurrency issue, not the
-                        most recent version)
-                '410':
-                    description: recently (soft) deleted
-                '418':
-                    description: I'm a teapot
-                '422':
-                    description: you sent the wrong payload / payload schema / failed validation
                 5XX:
                     description: Unexpected error.
 components:
