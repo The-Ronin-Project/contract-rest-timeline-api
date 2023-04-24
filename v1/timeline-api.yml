@@ -71,10 +71,10 @@ paths:
                                                 - "$ref": "#/components/schemas/Symptom"
                                                 - type: object
                                                   properties:
-                                                      last_reported_at:
+                                                      lastReportedAt:
                                                           type: string
                                                           example: '2020-03-04T14:39:28Z'
-                                    date_ranges:
+                                    dateRanges:
                                         type: object
                                         properties:
                                             symptoms:
@@ -182,28 +182,28 @@ components:
                     type: string
                     format: uuid
                     example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
-                external_id:
+                externalId:
                     type: string
                     example: 4e3567c9-b445-4d58-b62e-a3d6b2df2fd8
-                patient_id:
+                patientOd:
                     type: string
                     example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
-                tenant_id:
+                tenantId:
                     type: string
                     example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
-                completed_on:
+                completedOn:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                row_created_at:
+                rowCreatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                row_updated_at:
+                rowUpdatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                symptom_report_symptoms:
+                reportedSymptoms:
                     type: array
                     items:
                         "$ref": "#/components/schemas/SymptomReportSymptom"
@@ -214,19 +214,19 @@ components:
                     type: string
                     format: uuid
                     example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
-                symptom_report_id:
+                symptomReportId:
                     type: string
                     format: uuid
                     example: '00544940-a455-441f-a926-6a2d5d5dad83'
-                symptom_id:
+                symptomId:
                     type: string
                     format: uuid
                     example: dc1005f7-d52f-4ef7-85ab-0e832a288aa9
-                row_created_at:
+                rowCreatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                row_updated_at:
+                rowUpdatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
@@ -240,17 +240,17 @@ components:
                 code:
                     type: string
                     example: fatigue
-                display_name:
+                displayName:
                     type: string
                     example: Fatigue
-                display_order:
+                displayOrder:
                     type: integer
                     example: 3
-                row_created_at:
+                rowCreatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                row_updated_at:
+                rowUpdatedAt:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
