@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.4
+    version: 0.0.5
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -157,6 +157,9 @@ components:
                 tenantId:
                     type: string
                     example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
+                alertState:
+                    type: string
+                    example: HIGH_ALERT
                 completedOn:
                     type: string
                     format: date-time
