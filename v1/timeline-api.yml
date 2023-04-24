@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.3
+    version: 0.0.4
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -151,7 +151,7 @@ components:
                 externalId:
                     type: string
                     example: 4e3567c9-b445-4d58-b62e-a3d6b2df2fd8
-                patientOd:
+                patientId:
                     type: string
                     example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
                 tenantId:
