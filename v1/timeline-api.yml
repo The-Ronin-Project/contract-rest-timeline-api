@@ -47,6 +47,8 @@ paths:
                   type: string
               example: apposnd
         get:
+            security:
+                - Seki: []
             description: Get timeline metadata pertaining to when date ranges start/end
                 for a patient
             operationId: getTimelineMetadata
@@ -101,6 +103,8 @@ paths:
                   type: string
               example: apposnd
         get:
+            security:
+                - Seki: []
             tags:
                 - Timeline Event
             summary: Get symptom timeline events
