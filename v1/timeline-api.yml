@@ -61,49 +61,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    symptoms:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                id:
-                                                    type: string
-                                                    format: uuid
-                                                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
-                                                code:
-                                                    type: string
-                                                    example: fatigue
-                                                displayName:
-                                                    type: string
-                                                    example: Fatigue
-                                                displayOrder:
-                                                    type: integer
-                                                    example: 3
-                                                rowCreatedAt:
-                                                    type: string
-                                                    format: date-time
-                                                    example: '2023-04-20T21:04:36Z'
-                                                rowUpdatedAt:
-                                                    type: string
-                                                    format: date-time
-                                                    example: '2023-04-20T21:04:36Z'
-                                                lastReportedAt:
-                                                    type: string
-                                                    example: '2020-03-04T14:39:28Z'
-                                    dateRanges:
-                                        type: object
-                                        properties:
-                                            symptoms:
-                                                type: object
-                                                properties:
-                                                    start:
-                                                        type: string
-                                                        example: '2020-03-04T14:39:28Z'
-                                                    end:
-                                                        type: string
-                                                        example: '2020-03-04T14:39:28Z'
+                                $ref: "#/components/schemas/TimelineMetadataResponse"
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
@@ -164,12 +122,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    data:
-                                        type: array
-                                        items:
-                                            "$ref": "#/components/schemas/SymptomReport"
+                                $ref: "#/components/schemas/SymptomReportResponse"
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
@@ -181,6 +134,13 @@ paths:
                     description: Unexpected error.
 components:
     schemas:
+        SymptomReportResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/SymptomReport"
         SymptomReport:
             type: object
             properties:
@@ -236,10 +196,9 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-                symptom:
-                    "$ref": "#/components/schemas/Symptom"
         Symptom:
             type: object
+            description: A symptom
             properties:
                 id:
                     type: string
@@ -262,6 +221,41 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
+        PatientSymptom:
+            type: object
+            description: Patient metadata regarding a specific symptom
+            properties:
+                symptomId:
+                    type: string
+                    format: uuid
+                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
+                lastReportedAt:
+                    type: string
+                    description: When the symptom was last reported for the patient
+                    example: '2020-03-04T14:39:28Z'
+        TimelineMetadataResponse:
+            type: object
+            properties:
+                symptoms:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/Symptom"
+                patientSymptoms:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/PatientSymptom"
+                dateRanges:
+                    type: object
+                    properties:
+                        symptoms:
+                            type: object
+                            properties:
+                                start:
+                                    type: string
+                                    example: '2020-03-04T14:39:28Z'
+                                end:
+                                    type: string
+                                    example: '2020-03-04T14:39:28Z'
     securitySchemes:
         Seki:
             type: http
