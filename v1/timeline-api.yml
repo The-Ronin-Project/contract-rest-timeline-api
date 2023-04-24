@@ -1,0 +1,253 @@
+---
+openapi: 3.0.2
+info:
+    title: Timeline Service API
+    description: |-
+        The [Timeline Service](https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service):
+            - consumes events containing reported symptoms data from [CTS](https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1969750023/Clinician+Triage+Service) (Clinician Triage Service)
+            - stores a subset of that information needed to track timeline-oriented symptoms data
+            - serves said data pre-transformed/optimized to the frontend
+
+        To authorize requests in local & dev environments from this document, click `Authorize`, copy/paste the below auth token, and click `Authorize` again.
+        
+        ```
+        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTMzMjgzMjAsImlzcyI6IlNla2kiLCJqdGkiOiIycm9zcW05M2VlbmFwYmlrZm8wMXFrODEiLCJzdWIiOiIxNTFhMjUwOS1lNjllLTQwNDMtYmJhOC1kYmY5ODhkZGE1NTUiLCJ0ZW5hbnRpZCI6ImFwcG9zbmQifQ.gmX_Ad6sgTTW0iogI4kwuhYYbnpn5HGIE5RZxi56Ojs
+        ```
+    contact:
+        name: Team APEX (in Slack)
+        url: https://projectronin.slack.com/archives/C03QLMWKE12
+    version: 0.0.1
+externalDocs:
+    description: Find out more about Timeline Service
+    url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
+servers:
+    - url: http://localhost:3001/api/v1
+    - url: https://timeline.dev.projectronin.io/api/v1
+    - url: https://timeline.stage.projectronin.io/api/v1
+tags:
+    - name: Timeline Event
+      description: Generic timeline events of various types
+    - name: Timeline Metadata
+      description: Patient metadata pertaining to timeline
+paths:
+    "/tenants/{tenantId}/patients/{patientId}/timeline/metadata":
+        parameters:
+            - name: patientId
+              in: path
+              description: ID of patient to query by
+              required: true
+              schema:
+                  type: string
+            - name: tenantId
+              in: path
+              description: ID of tenant patient and clinician belongs to
+              required: true
+              schema:
+                  type: string
+        get:
+            description: Get timeline metadata pertaining to when date ranges start/end
+                for a patient
+            operationId: getTimelineMetadata
+            tags:
+                - Timeline Metadata
+            summary: Get timeline metadata pertaining to specified patient
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    symptoms:
+                                        type: array
+                                        items:
+                                            type: object
+                                            allOf:
+                                                - "$ref": "#/components/schemas/Symptom"
+                                                - type: object
+                                                  properties:
+                                                      last_reported_at:
+                                                          type: string
+                                                          example: '2020-03-04T14:39:28Z'
+                                    date_ranges:
+                                        type: object
+                                        properties:
+                                            symptoms:
+                                                type: object
+                                                properties:
+                                                    start:
+                                                        type: string
+                                                        example: '2020-03-04T14:39:28Z'
+                                                    end:
+                                                        type: string
+                                                        example: '2020-03-04T14:39:28Z'
+    "/tenants/{tenantId}/patients/{patientId}/timeline/symptoms":
+        parameters:
+            - name: patientId
+              in: path
+              description: ID of patient to query by
+              required: true
+              schema:
+                  type: string
+            - name: tenantId
+              in: path
+              description: ID of tenant patient and clinician belongs to
+              required: true
+              schema:
+                  type: string
+        get:
+            tags:
+                - Timeline Event
+            summary: Get symptom timeline events
+            description: Get all timeline events where (a) the timeline timestamp is between
+                the specified start & end timestamps, and (b) where the timeline event type
+                is `symptoms`.
+            operationId: getSymptomTimelineEvents
+            parameters:
+                - name: start
+                  in: query
+                  description: UTC timestamp representing the (inclusive) starting point of
+                      the date range by which to query timeline events. If not provided, the default
+                      value is exactly 30 days from now.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+                      example: '2023-04-20T21:04:36Z'
+                - name: end
+                  in: query
+                  description: UTC timestamp representing the (exclusive) ending point of the
+                      date range by which to query timeline events. If not provided, the default
+                      value is exactly 30 days from now.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+                      example: '2023-04-20T21:04:36Z'
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            "$ref": "#/components/schemas/SymptomReport"
+                '201':
+                    description: created, response follows. Resource should be specified in
+                        the Location header
+                '204':
+                    description: success, no response (DELETE)
+                '400':
+                    description: Invalid request. Should not be retried
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '405':
+                    description: wrong method, tried to PUT a POST (i.e. to collection instead
+                        of resource)
+                '409':
+                    description: failed update / replace on etag (concurrency issue, not the
+                        most recent version)
+                '410':
+                    description: recently (soft) deleted
+                '418':
+                    description: I'm a teapot
+                '422':
+                    description: you sent the wrong payload / payload schema / failed validation
+                5XX:
+                    description: Unexpected error.
+components:
+    schemas:
+        SymptomReport:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
+                external_id:
+                    type: string
+                    example: 4e3567c9-b445-4d58-b62e-a3d6b2df2fd8
+                patient_id:
+                    type: string
+                    example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
+                tenant_id:
+                    type: string
+                    example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
+                completed_on:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+                row_created_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+                row_updated_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+                symptom_report_symptoms:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/SymptomReportSymptom"
+        SymptomReportSymptom:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
+                symptom_report_id:
+                    type: string
+                    format: uuid
+                    example: '00544940-a455-441f-a926-6a2d5d5dad83'
+                symptom_id:
+                    type: string
+                    format: uuid
+                    example: dc1005f7-d52f-4ef7-85ab-0e832a288aa9
+                row_created_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+                row_updated_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+        Symptom:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
+                code:
+                    type: string
+                    example: fatigue
+                display_name:
+                    type: string
+                    example: Fatigue
+                display_order:
+                    type: integer
+                    example: 3
+                row_created_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+                row_updated_at:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:04:36Z'
+    securitySchemes:
+        Seki:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
