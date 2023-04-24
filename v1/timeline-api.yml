@@ -21,8 +21,8 @@ externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
 servers:
-    - url: http://localhost:3001/api/v1
     - url: https://timeline.dev.projectronin.io/api/v1
+    - url: http://localhost:3001/api/v1
     - url: https://timeline.stage.projectronin.io/api/v1
 tags:
     - name: Timeline Event
@@ -93,7 +93,7 @@ paths:
                 '404':
                     description: Patient not found, either that resource doesn’t exist or I don’t want
                         to tell you it does and you don’t have access
-                5XX:
+                '500':
                     description: Unexpected error.
     "/tenants/{tenantId}/patients/{patientId}/timeline/symptoms":
         parameters:
@@ -159,7 +159,7 @@ paths:
                 '404':
                     description: Patient or tenant not foundNot found, either that resource doesn’t exist or I don’t want
                         to tell you it does and you don’t have access
-                5XX:
+                '500':
                     description: Unexpected error.
 components:
     schemas:
