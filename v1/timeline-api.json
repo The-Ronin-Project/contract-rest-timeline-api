@@ -89,30 +89,32 @@
             }
         },
         "/tenants/{tenantId}/patients/{patientId}/timeline/symptoms": {
+            "parameters": [
+                {
+                    "name": "patientId",
+                    "in": "path",
+                    "description": "ID of patient to query by",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "tenantId",
+                    "in": "path",
+                    "description": "ID of tenant patient and clinician belongs to",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
             "get": {
                 "tags": ["Timeline Event"],
                 "summary": "Get symptom timeline events",
                 "description": "Get all timeline events where (a) the timeline timestamp is between the specified start & end timestamps, and (b) where the timeline event type is `symptoms`.",
                 "operationId": "getSymptomTimelineEvents",
                 "parameters": [
-                    {
-                        "name": "patientId",
-                        "in": "path",
-                        "description": "ID of patient to query by",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "tenantId",
-                        "in": "path",
-                        "description": "ID of tenant patient and clinician belongs to",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     {
                         "name": "start",
                         "in": "query",
