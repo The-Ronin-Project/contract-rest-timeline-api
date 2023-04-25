@@ -16,14 +16,12 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.4
+    version: 0.0.5
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
 servers:
-    - url: https://timeline.dev.projectronin.io/api/v1
-    - url: http://localhost:3001/api/v1
-    - url: https://timeline.stage.projectronin.io/api/v1
+    - url: /api/v1
 tags:
     - name: Timeline Event
       description: Generic timeline events of various types
@@ -157,6 +155,9 @@ components:
                 tenantId:
                     type: string
                     example: cd2d37a5-7967-46b0-b4e7-d91c61aea861
+                alertState:
+                    type: string
+                    example: HIGH_ALERT
                 completedOn:
                     type: string
                     format: date-time
@@ -196,6 +197,8 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
+                symptom:
+                    $ref: "#/components/schemas/Symptom"
         Symptom:
             type: object
             description: A symptom
