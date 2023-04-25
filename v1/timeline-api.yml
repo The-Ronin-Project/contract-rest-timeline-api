@@ -272,6 +272,7 @@ components:
                 lastReportedAt:
                     type: string
                     description: When the symptom was last reported for the patient
+                    format: date-time
                     example: '2020-03-04T14:39:28Z'
         TimelineMetadataResponse:
             type: object
@@ -301,9 +302,11 @@ components:
                             properties:
                                 start:
                                     type: string
+                                    format: date-time
                                     example: '2020-03-04T14:39:28Z'
                                 end:
                                     type: string
+                                    format: date-time
                                     example: '2020-03-04T14:39:28Z'
     securitySchemes:
         Seki:
