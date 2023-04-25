@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.5
+    version: 0.0.6
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -43,7 +43,7 @@ paths:
               required: true
               schema:
                   type: string
-              example: apposnd
+                  example: apposnd
         get:
             security:
                 - Seki: []
@@ -134,13 +134,34 @@ components:
     schemas:
         SymptomReportResponse:
             type: object
+            required:
+                - meta
+                - data
             properties:
+                meta:
+                    type: object
+                    required:
+                        - self
+                    properties:
+                        self:
+                            type: string
+                            example: "/api/v1/tenants/apposd/patients/apposd-43211234/timeline/symptoms?start=2023-01-01T00:00:01Z&end=2023-03-01T00:00:01Z"
                 data:
                     type: array
                     items:
                         "$ref": "#/components/schemas/SymptomReport"
         SymptomReport:
             type: object
+            required:
+                - id
+                - externalId
+                - patientId
+                - tenantId
+                - alertState
+                - completedOn
+                - rowCreatedAt
+                - rowUpdatedAt
+                - reportedSymptoms
             properties:
                 id:
                     type: string
@@ -176,6 +197,13 @@ components:
                         "$ref": "#/components/schemas/SymptomReportSymptom"
         SymptomReportSymptom:
             type: object
+            required:
+                - id
+                - symptomReportId
+                - symptomId
+                - rowCreatedAt
+                - rowUpdatedAt
+                - symptom
             properties:
                 id:
                     type: string
@@ -201,7 +229,13 @@ components:
                     $ref: "#/components/schemas/Symptom"
         Symptom:
             type: object
-            description: A symptom
+            required:
+                - id
+                - code
+                - displayName
+                - displayOrder
+                - rowCreatedAt
+                - rowUpdatedAt
             properties:
                 id:
                     type: string
@@ -227,6 +261,9 @@ components:
         PatientSymptom:
             type: object
             description: Patient metadata regarding a specific symptom
+            required:
+                - symptomId
+                - lastReportedAt
             properties:
                 symptomId:
                     type: string
@@ -238,6 +275,10 @@ components:
                     example: '2020-03-04T14:39:28Z'
         TimelineMetadataResponse:
             type: object
+            required:
+                - symptoms
+                - patientSymptoms
+                - dateRanges
             properties:
                 symptoms:
                     type: array
@@ -249,9 +290,14 @@ components:
                         $ref: "#/components/schemas/PatientSymptom"
                 dateRanges:
                     type: object
+                    required:
+                        - symptoms
                     properties:
                         symptoms:
                             type: object
+                            required:
+                                - start
+                                - end
                             properties:
                                 start:
                                     type: string
