@@ -139,8 +139,13 @@ components:
                 - data
             properties:
                 meta:
-                    type: string
-                    example: "/api/v1/tenants/apposd/patients/apposd-43211234/timeline/symptoms?start=2023-01-01T00:00:01Z&end=2023-03-01T00:00:01Z"
+                    type: object
+                    required:
+                        - self
+                    properties:
+                        self:
+                            type: string
+                            example: "/api/v1/tenants/apposd/patients/apposd-43211234/timeline/symptoms?start=2023-01-01T00:00:01Z&end=2023-03-01T00:00:01Z"
                 data:
                     type: array
                     items:
