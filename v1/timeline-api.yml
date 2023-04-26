@@ -16,18 +16,47 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.6
+    version: 0.0.7
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
 servers:
     - url: /api/v1
 tags:
-    - name: Timeline Event
+    - name: Timeline Symptoms
       description: Generic timeline events of various types
     - name: Timeline Metadata
       description: Patient metadata pertaining to timeline
+    - name: Mock Events (Local/Dev Only)
+      description: Mock publication of events, consumed by CTS synchronously
 paths:
+    "/test/events/symptoms":
+        post:
+            security:
+                - Seki: []
+            description: Mocks event consumption of Questionnaire Response topic
+            operationId: createQuestionnaireResponse
+            tags:
+                - Mock Events (Local/Dev Only)
+            requestBody:
+                description: Mocked example payload of Kafka event.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/QuestionnaireResponseEventBody'
+            responses:
+                '200':
+                    description: 'successful'
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '500':
+                    description: Unexpected error.
+
     "/tenants/{tenantId}/patients/{patientId}/timeline/metadata":
         parameters:
             - name: patientId
@@ -89,7 +118,7 @@ paths:
             security:
                 - Seki: []
             tags:
-                - Timeline Event
+                - Timeline Symptoms
             summary: Get symptom timeline events
             description: Get all timeline events where (a) the timeline timestamp is between
                 the specified start & end timestamps, and (b) where the timeline event type
@@ -132,6 +161,47 @@ paths:
                     description: Unexpected error.
 components:
     schemas:
+        QuestionnaireResponseEventBody:
+            type: object
+            required:
+                - patientId
+                - tenantId
+                - surveyResponseId
+                - symptoms
+                - alertState
+                - qol
+                - completedOn
+            properties:
+                patientId:
+                    type: string
+                    example: 022628c4-d1ea-4ae3-9a6b-04c30ac4f903
+                tenantId:
+                    type: string
+                    example: apposd
+                surveyResponseId:
+                    type: integer
+                    format: int64
+                    example: 1
+                symptoms:
+                    type: array
+                    items:
+                        type: string
+                        example: fatigue
+                writeIn:
+                    type: string
+                alertState:
+                    enum:
+                        - NON_ALERT
+                        - ALERT
+                        - HIGH_ALERT
+                qol:
+                    type: integer
+                    minimum: 0
+                    maximum: 100
+                completedOn:
+                    type: string
+                    format: date-time
+                    example: '2023-04-20T21:00:00Z'
         SymptomReportResponse:
             type: object
             required:
@@ -272,6 +342,7 @@ components:
                 lastReportedAt:
                     type: string
                     description: When the symptom was last reported for the patient
+                    format: date-time
                     example: '2020-03-04T14:39:28Z'
         TimelineMetadataResponse:
             type: object
@@ -301,9 +372,11 @@ components:
                             properties:
                                 start:
                                     type: string
+                                    format: date-time
                                     example: '2020-03-04T14:39:28Z'
                                 end:
                                     type: string
+                                    format: date-time
                                     example: '2020-03-04T14:39:28Z'
     securitySchemes:
         Seki:
