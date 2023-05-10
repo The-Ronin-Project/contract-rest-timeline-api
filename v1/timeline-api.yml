@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.8
+    version: 0.0.9
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -25,6 +25,8 @@ servers:
 tags:
     - name: Timeline Symptoms
       description: Generic timeline events of various types
+    - name: Timeline Vitals
+      description: timeline vitals events
     - name: Timeline Metadata
       description: Patient metadata pertaining to timeline
     - name: Mock Events (Local/Dev Only)
@@ -159,7 +161,70 @@ paths:
                 '403':
                     description: Forbidden, you sent your token and I have determined you unworthy
                 '404':
-                    description: Patient or tenant not foundNot found, either that resource doesn’t exist or I don’t want
+                    description: Patient or tenant not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '500':
+                    description: Unexpected error.
+    "/tenants/{tenantId}/patients/{patientId}/timeline/vitals":
+        parameters:
+            - name: patientId
+              in: path
+              description: ID of patient to query by
+              required: true
+              schema:
+                  type: string
+              example: 022628c4-d1ea-4ae3-9a6b-04c30ac4f903
+            - name: tenantId
+              in: path
+              description: ID of tenant patient and clinician belongs to
+              required: true
+              schema:
+                  type: string
+              example: apposnd
+        get:
+            security:
+                - Seki: []
+            tags:
+                - Timeline Vitals
+            summary: Get vitals timeline events
+            description: Get all timeline events where (a) the timeline timestamp is between
+                the specified start & end timestamps, and (b) where the timeline event type
+                is `vitals`.
+            operationId: getVitalsTimelineEvents
+            parameters:
+                - name: start
+                  in: query
+                  description: UTC timestamp representing the (inclusive) starting point of
+                      the date range by which to query timeline events. If not provided, no lower limit will be defined.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+                      example: '2023-01-01T00:00:01Z'
+                - name: end
+                  in: query
+                  description: UTC timestamp representing the (exclusive) ending point of the
+                      date range by which to query timeline events. If not provided, no upper limit will be defined.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+                      example: '2024-01-01T00:00:01Z'
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/Vital"
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient or tenant not found, either that resource doesn’t exist or I don’t want
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
@@ -351,6 +416,46 @@ components:
                     description: When the symptom was last reported for the patient
                     format: date-time
                     example: '2020-03-04T14:39:28Z'
+        Vital:
+            type: object
+            required:
+                - id
+                - date
+                - values
+            properties:
+                id:
+                    type: string
+                date:
+                    type: string
+                    format: date-time
+                    example: '2023-02-22T21:04:36Z'
+                values:
+                    type: array
+                    items:
+                        type: object
+                        required:
+                            - value
+                            - low
+                            - high
+                            - interpretation
+                            - sourceType
+                        properties:
+                            value:
+                                type: string
+                                example: '88'
+                            low:
+                                type: string
+                                example: '60'
+                            high:
+                                type: string
+                                example: '100'
+                            interpretation:
+                                type: string
+                                example: 'N'
+                            sourceType:
+                                type: string
+                            valueType:
+                                type: string
         TimelineMetadataResponse:
             type: object
             required:
