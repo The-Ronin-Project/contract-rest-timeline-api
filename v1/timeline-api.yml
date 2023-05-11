@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.9
+    version: 0.0.10
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -400,22 +400,40 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-20T21:04:36Z'
-        PatientSymptom:
+        TypeMetadata:
             type: object
-            description: Patient metadata regarding a specific symptom
             required:
-                - symptomId
-                - lastReportedAt
+                - id
+                - displayName
+                - dateRange
             properties:
-                symptomId:
+                id:
                     type: string
-                    format: uuid
                     example: 935a9879-e8ce-4c86-9dcc-1ecdc9722283
-                lastReportedAt:
+                displayName:
                     type: string
-                    description: When the symptom was last reported for the patient
+                units:
+                    type: string
+                valueTypeLabels:
+                    type: object
+                    additionalProperties:
+                        type: string
+                dateRange:
+                    $ref: "#/components/schemas/DateRange"
+        DateRange:
+            type: object
+            required:
+                - start
+                - end
+            properties:
+                start:
+                    type: string
                     format: date-time
-                    example: '2020-03-04T14:39:28Z'
+                    example: '2020-02-04T14:39:28Z'
+                end:
+                    type: string
+                    format: date-time
+                    example: '2023-04-21T19:12:08Z'
         Vital:
             type: object
             required:
@@ -460,36 +478,33 @@ components:
             type: object
             required:
                 - symptoms
-                - patientSymptoms
-                - dateRanges
+                - vitals
             properties:
                 symptoms:
-                    type: array
-                    items:
-                        $ref: "#/components/schemas/Symptom"
-                patientSymptoms:
-                    type: array
-                    items:
-                        $ref: "#/components/schemas/PatientSymptom"
-                dateRanges:
                     type: object
                     required:
-                        - symptoms
+                        - types
+                        - dateRange
                     properties:
-                        symptoms:
-                            type: object
-                            required:
-                                - start
-                                - end
-                            properties:
-                                start:
-                                    type: string
-                                    format: date-time
-                                    example: '2020-03-04T14:39:28Z'
-                                end:
-                                    type: string
-                                    format: date-time
-                                    example: '2020-03-04T14:39:28Z'
+                        types:
+                            type: array
+                            items:
+                                $ref: "#/components/schemas/TypeMetadata"
+                        dateRange:
+                            $ref: "#/components/schemas/DateRange"
+                vitals:
+                    type: object
+                    required:
+                        - types
+                        - dateRange
+                    properties:
+                        types:
+                            type: array
+                            items:
+                                $ref: "#/components/schemas/TypeMetadata"
+                        dateRange:
+                            $ref: "#/components/schemas/DateRange"
+
     securitySchemes:
         Seki:
             type: http
