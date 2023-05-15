@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.11
+    version: 0.0.12
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -32,7 +32,7 @@ tags:
     - name: Mock Events (Local/Dev Only)
       description: Mock publication of events, consumed by CTS synchronously
 paths:
-    "/test/events/symptoms":
+    "/events/symptoms":
         post:
             security:
                 - Seki: []
@@ -47,7 +47,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/QuestionnaireResponseEventBody'
             responses:
-                '200':
+                '201':
                     description: Successful operation
                     content:
                         application/json:
@@ -62,7 +62,36 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
-
+    "/events/vitals":
+        post:
+            security:
+                -   Seki: [ ]
+            description: Event consumption of Vitals topic
+            operationId: createVitalsObservation
+            tags:
+                - Mock Events (Local/Dev Only)
+            requestBody:
+                description: Mocked example payload of Kafka event.
+                content:
+                    application/json:
+                        schema:
+                            type: object
+            responses:
+                '201':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Vital"
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '500':
+                    description: Unexpected error.
     "/tenants/{tenantId}/patients/{patientId}/timeline/metadata":
         parameters:
             - name: patientId
