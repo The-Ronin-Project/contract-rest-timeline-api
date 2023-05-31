@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.14
+    version: 0.0.15
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -399,12 +399,15 @@ components:
         Vital:
             type: object
             required:
-                - id
+                - typeId
                 - date
                 - values
             properties:
-                id:
+                typeId:
                     type: string
+                    description: >
+                        The vital type id of this vital, e.g. if it's a blood pressure, heart rate, etc. If more information is needed,
+                        the vital type id can be referenced against vitals.types in the metadata response.
                 date:
                     type: string
                     description: This will always be a date or a datetime
