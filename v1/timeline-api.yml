@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.17
+    version: 0.1.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -427,6 +427,7 @@ components:
                     items:
                         type: string
                         example: Fatigue
+
         TypeMetadata:
             type: object
             required:
@@ -447,6 +448,7 @@ components:
                         type: string
                 dateRange:
                     $ref: "#/components/schemas/DateRange"
+
         LabPanelMetadata:
             type: object
             required:
@@ -469,6 +471,7 @@ components:
                     example: 'H&H'
                 dateRange:
                     $ref: "#/components/schemas/DateRange"
+
         DateRange:
             type: object
             required:
@@ -483,6 +486,7 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-21T19:12:08Z'
+
         Comparator:
             type: string
             enum: [ GREATER_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL ]
@@ -491,22 +495,68 @@ components:
                 value. For example, a value of `15` with a comparator of `GREATER_THAN` means that the value is `> 15`.
                 Note that a comparator won't be provided when the value is an exact value, or in other words, there is
                 no EQUALS comparator - it will just be null.
+
+        Decimal:
+            type: string
+            description: >
+                A decimal value encoded as a string to ensure that precision is maintained (i.e. "3.00" doesn't become
+                "3.0")
+
+        ReferenceRange:
+            type: object
+            description: >
+                The range in which a value is considered normal for a vital or lab. Note that the unit is implied to be 
+                the same as that of the enclosing object. Note that when a low or high boundary is missing that it is
+                effectively unbounded on that side. For example, a low of 5 is equivalent to anything greater than or
+                equal to 5 being considered normal (aka ">= 5").
+            required:
+                - source
+            properties:
+                low:
+                    allOf: [{$ref: "#/components/schemas/Decimal"}]
+                    description: The lower boundary (inclusive) of a normal value
+                high:
+                    allOf: [{$ref: "#/components/schemas/Decimal"}]
+                    description: The upper boundary (inclusive) of a normal value
+                interpretation:
+                    allOf: [{$ref: "#/components/schemas/ReferenceRangeInterpretation"}]
+                    description: The interpretation of this reference range
+                source:
+                    type: string
+                    description: The source of this reference range, as appropriate to present to an end user.
+                    example: EHR Reported
+        ReferenceRangeInterpretation:
+            type: string
+            enum: [ NORMAL, HIGH, LOW ]
+            description: >
+                The interpretation of a reference range. Note that this is a simplified understanding compared to FHIR
+                and is boiled down simply to normal high or low, and not more complex values like abnormal, critically
+                high, etc.
+
+        DateOrDateTime:
+            type: string
+            description: Either a date (2023-04-05) or a datetime (2023-04-05T12:34:56Z).
+
         Vital:
             type: object
             required:
+                - typeId
                 - id
                 - date
                 - values
             properties:
-                id:
+                typeId:
                     type: string
                     description: >
                         The id of the type of this vital. This can be cross referenced with the metadata
                         response to find out metadata about the type (e.g. the units).
-                date:
+                id:
                     type: string
-                    description: This will always be a date or a datetime
-                    example: '2023-02-22T21:04:36Z'
+                    description: |
+                        The id of the type of this vital. This can be cross referenced with the metadata response to find out metadata about the type (e.g. the units).
+                        *Deprecated:* this is confusing named and is being renamed typeId
+                date:
+                    $ref: "#/components/schemas/DateOrDateTime"
                 values:
                     type: array
                     description: >
@@ -525,41 +575,64 @@ components:
                 - sourceType
             properties:
                 value:
-                    type: string
-                    example: '88'
+                    allOf: [{$ref: "#/components/schemas/Decimal"}]
+                    example: '88.3'
                     description: The value of this vital sign.
                 comparator:
                     $ref: "#/components/schemas/Comparator"
+                referenceRange:
+                    $ref: "#/components/schemas/ReferenceRange"
                 low:
                     type: string
+                    deprecated: true
                     example: '60'
-                    description: The lower boundary of the ref range, if there is one.
+                    description: |
+                        The lower boundary of the ref range, if there is one.
+                        *Deprecated*: moved into referenceRange.
                 high:
                     type: string
+                    deprecated: true
                     example: '100'
-                    description: The upper boundary of the ref range, if there is one.
+                    description: |
+                        The upper boundary of the ref range, if there is one.
+                        *Deprecated*: moved into referenceRange.
                 interpretation:
                     type: string
+                    deprecated: true
                     example: 'N'
-                    description: The interpretation of the ref range, if there is one. Either N, L, H, or empty.
+                    description: |
+                        The interpretation of the ref range, if there is one. Either N, L, H, or empty.
+                        *Deprecated*: moved into referenceRange.
                 sourceType:
                     type: string
+                    deprecated: true
                     example: 'EHR Reported'
+                    description: |
+                        If the source of the interpretation is given from a source or derived by Ronin. Note that this _is not_ an enum, but is a display oriented string that can be used as-is.
+                        *Deprecated*: moved into referenceRange.
+                componentType:
+                    type: string
+                    example: 'systolic'
                     description: >
-                        If the source of the interpretation is given from a source or derived by Ronin. Note that this
-                        _is not_ an enum, but is a display oriented string that can be used as-is.
+                        The component type of this value. This is only used for blood pressure as other types of vitals
+                        only have one value. In the case of blood pressure, it will be either `systolic` or `diastolic`.
                 valueType:
                     type: string
+                    deprecated: true
                     example: 'systolic'
                     description: >
                         The type of this value. This is only used for blood pressure as other types of vitals only have
                         one value. In the case of blood pressure, it will be either `systolic` or `diastolic`.
+
+                        *Deprecated*: confusingly named, and is being renamed componentType
+
         Lab:
             type: object
             required:
                 - typeId
                 - date
                 - value
+                - valueType
             properties:
                 typeId:
                     type: string
@@ -567,32 +640,58 @@ components:
                         The lab type id of this lab, e.g. if it's glucose, sodium, etc. If more information is needed,
                         the lab type id can be referenced against labs.types in the metadata response.
                 date:
-                    type: string
-                    description: This will always be a date or a datetime
-                    example: '2023-02-22T21:04:36Z'
+                    $ref: "#/components/schemas/DateOrDateTime"
                 value:
                     type: string
                     example: '23'
-                    description: Lab values can be many different types, but this will be a stringified value - it will still need to be concatenated with a comparator and units (from metadata), if present.
+                    description: >
+                        Lab values can be many different types, but this will be a stringified value. Depending on the
+                        value type, processing is likely required. For example, quantities need to have their units and
+                        comparator considered, ranges need to have their units considered, datetimes likely need to be
+                        reformatted to a human formatted string, etc.
                 comparator:
                     $ref: "#/components/schemas/Comparator"
-                low:
-                    type: string
-                    example: '60'
-                high:
-                    type: string
-                    example: '100'
-                interpretation:
-                    type: string
-                    example: 'N'
-                sourceType:
-                    type: string
-                    example: 'EHR Reported'
-                    description: If the source of the interpretation is given from a source or derived by Ronin
                 valueType:
                     type: string
-                    example: 'Quantity'
-                    description: Type of value, for example quantity (with units and optional comparator), boolean, number, etc
+                    enum: [QUANTITY, CODEABLE_CONCEPT, STRING, BOOLEAN, INTEGER, RANGE, TIME, DATETIME]
+                    description: |
+                        Type of value, for example quantity (with units and optional comparator), boolean, number, etc.
+                        
+                        Note that different types of values should be used in different ways:
+                        * Quantities and Ranges can (and very likely do) have units, but other value types cannot
+                        * Only quantities can have a comparator
+                        * CodeableConcepts will not be the actual concept in `value` but will be the display text of the CodeableConcept
+                        * Booleans will be either the string 'true' or the string 'false'
+                        * Times will be hh:mm:ss (e.g. 13:02:26) formatted
+                        * Datetimes are FHIR style datetimes and thus can be a partial date (e.g. just year or just year and month), a complete date, or a complete date time
+                referenceRange:
+                    $ref: "#/components/schemas/ReferenceRange"
+                low:
+                    type: string
+                    deprecated: true
+                    example: '60'
+                    description: >
+                        *Deprecated*: moved into referenceRange
+                high:
+                    type: string
+                    deprecated: true
+                    example: '100'
+                    description: >
+                        *Deprecated*: moved into referenceRange
+                interpretation:
+                    type: string
+                    deprecated: true
+                    example: 'N'
+                    description: >
+                        *Deprecated*: moved into referenceRange
+                sourceType:
+                    type: string
+                    deprecated: true
+                    example: 'EHR Reported'
+                    description: |
+                        If the source of the interpretation is given from a source or derived by Ronin
+                        *Deprecated*: moved into referenceRange
+
         TimelineMetadataResponse:
             type: object
             required:
