@@ -509,6 +509,7 @@ components:
                 the same as that of the enclosing object. Note that when a low or high boundary is missing that it is
                 effectively unbounded on that side. For example, a low of 5 is equivalent to anything greater than or
                 equal to 5 being considered normal (aka ">= 5").
+                Note that `low` and `high` are both optional but at least one of them will be non-empty.
             required:
                 - source
             properties:
