@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.16
+    version: 0.0.17
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -483,6 +483,14 @@ components:
                     type: string
                     format: date-time
                     example: '2023-04-21T19:12:08Z'
+        Comparator:
+            type: string
+            enum: [ GREATER_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL ]
+            description: >
+                A modifier on a value specifying that the value is relative to some given value rather than an exact
+                value. For example, a value of `15` with a comparator of `GREATER_THAN` means that the value is `> 15`.
+                Note that a comparator won't be provided when the value is an exact value, or in other words, there is
+                no EQUALS comparator - it will just be null.
         Vital:
             type: object
             required:
@@ -521,13 +529,7 @@ components:
                     example: '88'
                     description: The value of this vital sign.
                 comparator:
-                    type: string
-                    enum: [GREATER_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL]
-                    description: >
-                        A modifier on the value specifying that the value is relative to some given value
-                        rather than an exact value. For example, a value of `15` with a comparator of `GREATER_THAN`
-                        means that the value is `> 15`. Note that a comparator won't be provided when the value is an
-                        exact value, or in other words, there is no EQUALS comparator - it will just be null.
+                    $ref: "#/components/schemas/Comparator"
                 low:
                     type: string
                     example: '60'
@@ -573,8 +575,7 @@ components:
                     example: '23'
                     description: Lab values can be many different types, but this will be a stringified value - it will still need to be concatenated with a comparator and units (from metadata), if present.
                 comparator:
-                    type: string
-                    example: '<='
+                    $ref: "#/components/schemas/Comparator"
                 low:
                     type: string
                     example: '60'
