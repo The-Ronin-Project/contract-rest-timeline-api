@@ -613,10 +613,10 @@ components:
                         *Deprecated*: moved into referenceRange.
                 componentType:
                     type: string
-                    example: 'systolic'
+                    enum: [ SYSTOLIC, DIASTOLIC ]
                     description: >
                         The component type of this value. This is only used for blood pressure as other types of vitals
-                        only have one value. In the case of blood pressure, it will be either `systolic` or `diastolic`.
+                        only have one value.
                 valueType:
                     type: string
                     deprecated: true
