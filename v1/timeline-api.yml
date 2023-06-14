@@ -499,8 +499,8 @@ components:
         Decimal:
             type: string
             description: >
-                A decimal value, encoded as a string instead of a number so that precision can be maintained (i.e.
-                "3" vs "3.0" vs "3.00" are different things)
+                A decimal value, encoded as a string instead of a number so that precision can be maintained.
+                Examples: `3`, `3.14159`, `3.0`, `3.00`, `5.21e-27`
 
         ReferenceRange:
             type: object
