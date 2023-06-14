@@ -661,7 +661,8 @@ components:
                         Note that different types of values should be used in different ways:
                         * Quantities and Ranges can (and very likely do) have units, but other value types cannot
                         * Only quantities can have a comparator
-                        * CodeableConcepts will not be the actual concept in `value` but will be the display text of the CodeableConcept
+                        * Only quantities have reference ranges
+                        * CodeableConcepts will not be the actual concept(s) in `value` but will be the display text of the CodeableConcept
                         * Booleans will be either the string 'true' or the string 'false'
                         * Times will be hh:mm:ss (e.g. 13:02:26) formatted
                         * Datetimes are FHIR style datetimes and thus can be a partial date (e.g. just year or just year and month), a complete date, or a complete date time
