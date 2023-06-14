@@ -500,7 +500,7 @@ components:
             type: string
             description: >
                 A decimal value, encoded as a string instead of a number so that precision can be maintained.
-                Examples: `3`, `3.14159`, `3.0`, `3.00`, `5.21e-27`
+                Examples: `"3"`, `"3.14159"`, `"3.0"`, `"3.00"`, `"5.21e-27"`
 
         ReferenceRange:
             type: object
