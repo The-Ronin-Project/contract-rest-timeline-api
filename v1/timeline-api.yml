@@ -569,7 +569,7 @@ components:
                     type: array
                     description: >
                         The value(s) of this vital. Note that only blood pressure will ever have more than one value in
-                        which case the valueType can be used to know which blood pressure component the value is for (
+                        which case the component can be used to know which blood pressure component the value is for (
                         i.e. systolic vs diastolic).
                     items:
                         $ref: "#/components/schemas/VitalValue"
@@ -622,8 +622,8 @@ components:
                     type: string
                     enum: [ SYSTOLIC, DIASTOLIC ]
                     description: >
-                        The component type of this value. This is only used for blood pressure as other types of vitals
-                        only have one value.
+                        The component type of this VitalValue. This is only used for blood pressure as other types of
+                        vitals only have one VitalValue.
                 valueType:
                     type: string
                     deprecated: true
