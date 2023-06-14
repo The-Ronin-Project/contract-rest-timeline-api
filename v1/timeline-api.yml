@@ -499,17 +499,24 @@ components:
         Decimal:
             type: string
             description: >
-                A decimal value encoded as a string to ensure that precision is maintained (i.e. "3.00" doesn't become
-                "3.0")
+                A decimal value, encoded as a string instead of a number so that precision can be maintained (i.e.
+                "3" vs "3.0" vs "3.00" are different things)
 
         ReferenceRange:
             type: object
             description: >
-                The range in which a value is considered normal for a vital or lab. Note that the unit is implied to be 
-                the same as that of the enclosing object. Note that when a low or high boundary is missing that it is
-                effectively unbounded on that side. For example, a low of 5 is equivalent to anything greater than or
-                equal to 5 being considered normal (aka ">= 5").
-                Note that `low` and `high` are both optional but at least one of them will be non-empty.
+                The range in which a measurement is considered normal. The unit is implied to be the same as that of the
+                enclosing object, and the low and high boundaries are both inclusive.
+                
+                
+                A reference range can be thought of as mathematical interval of the form `[low, high]` where a missing
+                low is considered negative infinity and a missing high positive infinity. The way this is usually
+                expressed though is either a range (e.g. "3 to 5" for `{low: 3, high: 5}`), or an inequality (e.g. 
+                `<= 10` for `{low: null, high: 10}`, or `>= 3.1415` for `{low: "3.1415", high: null}`).
+                
+                
+                Note that in general consumers should never be interpreting the ref range but instead use 
+                `interpretation`.
             required:
                 - source
             properties:
