@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.17
+    version: 0.0.18
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -79,12 +79,8 @@ paths:
                         schema:
                             type: object
             responses:
-                '201':
-                    description: Successful operation
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Vital"
+                '202':
+                    description: The request has been accepted and will be processed in the background
                 '401':
                     description: Unauthorized, you didn’t send your token
                 '403':
