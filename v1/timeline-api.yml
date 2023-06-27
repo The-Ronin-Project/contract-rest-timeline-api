@@ -9,7 +9,7 @@ info:
             - serves said data pre-transformed/optimized to the frontend
 
         To authorize requests in local & dev environments from this document, click `Authorize`, copy/paste the below auth token, and click `Authorize` again.
-        
+
         ```
         eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTMzMjgzMjAsImlzcyI6IlNla2kiLCJqdGkiOiIycm9zcW05M2VlbmFwYmlrZm8wMXFrODEiLCJzdWIiOiIxNTFhMjUwOS1lNjllLTQwNDMtYmJhOC1kYmY5ODhkZGE1NTUiLCJ0ZW5hbnRpZCI6ImFwcG9zbmQifQ.gmX_Ad6sgTTW0iogI4kwuhYYbnpn5HGIE5RZxi56Ojs
         ```
@@ -503,15 +503,15 @@ components:
             description: >
                 The range in which a measurement is considered normal. The unit is implied to be the same as that of the
                 enclosing object, and the low and high boundaries are both inclusive.
-                
-                
+
+
                 A reference range can be thought of as mathematical interval of the form `[low, high]` where a missing
                 low is considered negative infinity and a missing high positive infinity. The way this is usually
-                expressed though is either a range (e.g. "3 to 5" for `{low: 3, high: 5}`), or an inequality (e.g. 
+                expressed though is either a range (e.g. "3 to 5" for `{low: 3, high: 5}`), or an inequality (e.g.
                 `<= 10` for `{low: null, high: 10}`, or `>= 3.1415` for `{low: "3.1415", high: null}`).
-                
-                
-                Note that in general consumers should never be interpreting the ref range but instead use 
+
+
+                Note that in general consumers should never be interpreting the ref range but instead use
                 `interpretation`.
             required:
                 - source
@@ -556,6 +556,7 @@ components:
                         response to find out metadata about the type (e.g. the units).
                 id:
                     type: string
+                    deprecated: true
                     description: |
                         The id of the type of this vital. This can be cross referenced with the metadata response to find out metadata about the type (e.g. the units).
                         *Deprecated:* this is confusing named and is being renamed typeId
@@ -660,7 +661,7 @@ components:
                     enum: [QUANTITY, CODEABLE_CONCEPT, STRING, BOOLEAN, INTEGER, RANGE, TIME, DATETIME]
                     description: |
                         Type of value, for example quantity (with units and optional comparator), boolean, number, etc.
-                        
+
                         Note that different types of values should be used in different ways:
                         * Quantities and Ranges can (and very likely do) have units, but other value types cannot
                         * Only quantities can have a comparator
