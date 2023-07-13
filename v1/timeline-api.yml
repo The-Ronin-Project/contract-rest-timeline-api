@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.0.18
+    version: 0.1.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -473,12 +473,12 @@ components:
             properties:
                 start:
                     type: string
-                    format: date-time
+                    description: An ISO 8601 date or timestamp
                     example: '2020-02-04T14:39:28Z'
                 end:
                     type: string
-                    format: date-time
-                    example: '2023-04-21T19:12:08Z'
+                    description: An ISO 8601 date or timestamp
+                    example: '2023-04-21'
         Comparator:
             type: string
             enum: [ GREATER_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL ]
