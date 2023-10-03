@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.1.0
+    version: 0.1.1
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -491,14 +491,34 @@ components:
             type: object
             required:
                 - id
+                - typeId
+                - observationId
                 - date
                 - values
             properties:
                 id:
                     type: string
+                    deprecated: true
                     description: >
                         The id of the type of this vital. This can be cross referenced with the metadata
                         response to find out metadata about the type (e.g. the units).
+                        
+                        Note that (unfortunately/confusingly) this is NOT the id of this vital event itself nor the
+                        underlying observation from which it was derived. This field is essentially a misnomer and 
+                        should instead be thought of as the equivalent of the typeId for labs.
+                typeId:
+                    type: string
+                    description: >
+                        The id of the type of this vital. This can be cross referenced with the metadata response to
+                        find out metadata about the type (e.g. the units).
+                    
+                        Note that this type is from a timeline perspective and not from a purely vital perspective, the
+                        main implication of that being that units matter. For example, a BP in mmHg and a BP in PSI are
+                        _not_ the same typeId even though they are logically the same vital.
+                observationId:
+                    type: string
+                    description: >
+                        The id of the observation from which this vital was derived.
                 date:
                     type: string
                     description: This will always be a date or a datetime
@@ -554,6 +574,7 @@ components:
             type: object
             required:
                 - typeId
+                - observationId
                 - date
                 - value
             properties:
@@ -562,6 +583,15 @@ components:
                     description: >
                         The lab type id of this lab, e.g. if it's glucose, sodium, etc. If more information is needed,
                         the lab type id can be referenced against labs.types in the metadata response.
+                        
+                        Note that this id is from the perspective of a timeline event and not just a lab, the main
+                        distinction being that panel and unit matter. For example, a WBC in the H&H panel is a different
+                        type of lab timeline event than a lab in the CBC panel, even though they are logically the same
+                        lab type.
+                observationId:
+                    type: string
+                    description: >
+                        The id of the observation from which this lab result event was derived.
                 date:
                     type: string
                     description: This will always be a date or a datetime
