@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.1.1
+    version: 0.2.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -77,7 +77,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            type: object
+                            type: string
             responses:
                 '202':
                     description: The request has been accepted and will be processed in the background
