@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.2.0
+    version: 0.3.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -29,6 +29,8 @@ tags:
       description: timeline vitals events
     - name: Timeline Labs
       description: timeline labs events
+    - name: Timeline Events
+      description: timeline events
     - name: Timeline Metadata
       description: Patient metadata pertaining to timeline
     - name: Mock Events (Local/Dev Only)
@@ -64,6 +66,7 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
     "/events/observations":
         post:
             security:
@@ -90,6 +93,34 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
+    "/events/document-reference":
+        post:
+            security:
+                -   Seki: [ ]
+            description: Event consumption of DocumentReference
+            operationId: processDocumentReference
+            tags:
+                - Mock Events (Local/Dev Only)
+            requestBody:
+                description: The DocumentReference JSON
+                content:
+                    application/json:
+                        schema:
+                            type: string
+            responses:
+                '202':
+                    description: The request has been accepted and will be processed in the background
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '500':
+                    description: Unexpected error.
+
     "/tenants/{tenantId}/patients/{patientId}/timeline/metadata":
         parameters:
             - name: patientId
@@ -131,6 +162,7 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
     "/tenants/{tenantId}/patients/{patientId}/timeline/symptoms":
         parameters:
             - name: patientId
@@ -192,6 +224,7 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
     "/tenants/{tenantId}/patients/{patientId}/timeline/vitals":
         parameters:
             - name: patientId
@@ -255,6 +288,7 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
     "/tenants/{tenantId}/patients/{patientId}/timeline/labs":
         parameters:
             - name: patientId
@@ -318,6 +352,70 @@ paths:
                         to tell you it does and you don’t have access
                 '500':
                     description: Unexpected error.
+
+    "/tenants/{tenantId}/patients/{patientId}/timeline/events":
+        parameters:
+            - name: patientId
+              in: path
+              description: ID of patient to query by
+              required: true
+              schema:
+                  type: string
+              example: 022628c4-d1ea-4ae3-9a6b-04c30ac4f903
+            - name: tenantId
+              in: path
+              description: ID of tenant patient and clinician belongs to
+              required: true
+              schema:
+                  type: string
+              example: apposnd
+        get:
+            security:
+                - Seki: []
+            tags:
+                - Timeline Events
+            summary: Get timeline events
+            description: >
+                Retrieves "generic" timeline events. In practice, this is all of the timeline events that don't have
+                their own endpoints (i.e. labs, vitals, and symptoms are _not_ included in this endpoint).
+            operationId: getTimelineEvents
+            parameters:
+                - name: start
+                  in: query
+                  description: > 
+                    Date representing the (inclusive) starting point of the date range by which to query timeline events
+                  required: true
+                  schema:
+                      type: string
+                      format: date
+                      example: '2023-01-01'
+                - name: end
+                  in: query
+                  description: >
+                    Date representing the (exclusive) ending point of the date range by which to query timeline events.
+                  required: true
+                  schema:
+                      type: string
+                      format: date
+                      example: '2024-01-01'
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items: { $ref: "#/components/schemas/TimelineEventAggregate" }
+                '401':
+                    description: Unauthorized, you didn’t send your token
+                '403':
+                    description: Forbidden, you sent your token and I have determined you unworthy
+                '404':
+                    description: Patient or tenant not found, either that resource doesn’t exist or I don’t want
+                        to tell you it does and you don’t have access
+                '500':
+                    description: Unexpected error.
+
 components:
     schemas:
         QuestionnaireResponseEventResponse:
@@ -423,6 +521,7 @@ components:
                     items:
                         type: string
                         example: Fatigue
+
         TypeMetadata:
             type: object
             required:
@@ -619,12 +718,14 @@ components:
                     type: string
                     example: 'Quantity'
                     description: Type of value, for example quantity (with units and optional comparator), boolean, number, etc
+
         TimelineMetadataResponse:
             type: object
             required:
                 - symptoms
                 - vitals
                 - labs
+                - events
             properties:
                 symptoms:
                     type: object
@@ -662,6 +763,176 @@ components:
                             type: array
                             items:
                                 $ref: "#/components/schemas/LabPanelMetadata"
+                events:
+                    type: object
+                    required:
+                        - types
+                        - dateRange
+                    properties:
+                        types:
+                            type: array
+                            description: The metadata for each individual event type
+                            items: { $ref: "#/components/schemas/EventTypeMetadata" }
+                        dateRange: { $ref: "#/components/schemas/DateRange" }
+
+        EventTypeMetadata:
+            type: object
+            description: The metadata for a specific event type
+            properties:
+                type: { $ref: "#/components/schemas/TimelineEventType" }
+                label:
+                    type: string
+                    minLength: 1
+                    description: "The human displayable label of this event type"
+                    example: "Provider Visit"
+                dateRange: { $ref: "#/components/schemas/DateRange" }
+            required: [ type, label, dateRange ]
+
+        TimelineEventType:
+            type: string
+            enum: [SURGERY, PROCEDURE, IMAGING, PROVIDER_VISIT, LAB_REPORT]
+
+        TimelineEvent:
+            type: object
+            properties:
+                id:
+                    type: string
+                    minLength: 1
+                    description: |
+                        The unique identifier of this timeline event.
+                        
+                        Note that this _may_ be the same as the document id but is not guaranteed to be and *should not
+                        be used as such*. The document id should be accessed through `additionalFields.documentId` if
+                        needed.
+                patientId: { type: string, minLength: 1 }
+                tenantId: { type: string, minLength: 1 }
+                type: { $ref: "#/components/schemas/TimelineEventType" }
+                date: { $ref: "#/components/schemas/DateOrDateTime" }
+            required: [ id, patientId, tenantId, type, date, additionalFields ]
+            discriminator:
+                propertyName: type
+                mapping:
+                    SURGERY: "#/components/schemas/TimelineEventSurgery"
+                    PROCEDURE: "#/components/schemas/TimelineEventProcedure"
+                    IMAGING: "#/components/schemas/TimelineEventImaging"
+                    PROVIDER_VISIT: "#/components/schemas/TimelineEventProviderVisit"
+                    LAB_REPORT: "#/components/schemas/TimelineEventLabReport"
+        TimelineEventAggregate:
+            oneOf:
+                - $ref: "#/components/schemas/TimelineEventSurgery"
+                - $ref: "#/components/schemas/TimelineEventProcedure"
+                - $ref: "#/components/schemas/TimelineEventImaging"
+                - $ref: "#/components/schemas/TimelineEventProviderVisit"
+                - $ref: "#/components/schemas/TimelineEventLabReport"
+
+        TimelineEventSurgery:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                      additionalFields: { $ref: "#/components/schemas/TimelineEventSurgeryAdditionalFields" }
+                  required: [ additionalFields ]
+        TimelineEventSurgeryAdditionalFields:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+
+        TimelineEventProcedure:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                      additionalFields: { $ref: "#/components/schemas/TimelineEventProcedureAdditionalFields" }
+                  required: [ additionalFields ]
+        TimelineEventProcedureAdditionalFields:
+          allOf:
+              - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+              - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+
+        TimelineEventImaging:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                    additionalFields:
+                        $ref: "#/components/schemas/TimelineEventImagingAdditionalFields"
+                  required: [ additionalFields ]
+        TimelineEventImagingAdditionalFields:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+
+        TimelineEventProviderVisit:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                      additionalFields: { $ref: "#/components/schemas/TimelineEventProviderVisitAdditionalFields" }
+                  required: [ additionalFields ]
+        TimelineEventProviderVisitAdditionalFields:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+                - type: object
+                  properties:
+                      documentProviderAuthors:
+                          type: array
+                          description: The provider(s) who authored the document associated with this provider visit.
+                          items: { $ref: "#/components/schemas/DocumentAuthor" }
+                  required: [ documentProviderAuthors ]
+        DocumentAuthor:
+            type: object
+            description: The author of a document
+            properties:
+                name:
+                    type: string
+                    minLength: 1
+                    description: "The full name of the author"
+            required: [ name ]
+
+        TimelineEventLabReport:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                      additionalFields: { $ref: "#/components/schemas/TimelineEventLabReportAdditionalFields" }
+                  required: [ additionalFields ]
+        TimelineEventLabReportAdditionalFields:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                # This meaningless second object in the allOf is a hack so the Kotlin generator makes a proper
+                # TimelineEventSurgeryAdditionalFields class since if we just reference WithDocumentId it won't.
+                - type: object
+
+        TimelineEventAdditionalFieldsWithDocumentId:
+            type: object
+            properties:
+                documentId:
+                    type: string
+                    minLength: 1
+                    description: >
+                        The document id with which this event is associated. In concrete terms, this links back to a 
+                        `DocumentReference.id`.
+                    example: apposnd-e4E7wYemJX29aGyQ7tUr6hw9
+            required: [ documentId ]
+        TimelineEventAdditionalFieldsWithLabel:
+            type: object
+            properties:
+                label:
+                    type: string
+                    minLength: 1
+                    description: >
+                        A label approximately describing what this event is in human terms. In practice, this tends to
+                        be the DocumentReference.type.text of the associated document, but that isn't guaranteed.
+                    example: Progress Notes
+
+        DateOrDateTime:
+            type: string
+            description: >
+                An ISO-8601 date or datetime. In other words, either a date like 2023-04-03 or a datetime like
+                2023-04-03T12:34:56Z.
+            minLength: 10
+            example: 2023-04-03
 
     securitySchemes:
         Seki:
