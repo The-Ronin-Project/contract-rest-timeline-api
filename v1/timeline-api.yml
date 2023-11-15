@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.3.0
+    version: 0.3.1
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -780,13 +780,13 @@ components:
             description: The metadata for a specific event type
             properties:
                 type: { $ref: "#/components/schemas/TimelineEventType" }
-                label:
+                displayName:
                     type: string
                     minLength: 1
-                    description: "The human displayable label of this event type"
+                    description: "The human displayable name of this event type"
                     example: "Provider Visit"
                 dateRange: { $ref: "#/components/schemas/DateRange" }
-            required: [ type, label, dateRange ]
+            required: [ type, displayName, dateRange ]
 
         TimelineEventType:
             type: string
