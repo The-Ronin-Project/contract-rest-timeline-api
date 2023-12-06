@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.3.1
+    version: 0.3.2
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -387,8 +387,8 @@ paths:
                   required: true
                   schema:
                       type: string
-                      format: date
-                      example: '2023-01-01'
+                      format: date-time
+                      example: '2023-01-01T06:00:00Z'
                 - name: end
                   in: query
                   description: >
@@ -396,8 +396,8 @@ paths:
                   required: true
                   schema:
                       type: string
-                      format: date
-                      example: '2024-01-01'
+                      format: date-time
+                      example: '2025-01-01T06:00:00Z'
             responses:
                 '200':
                     description: Successful operation
