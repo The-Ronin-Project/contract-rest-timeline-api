@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.4.2
+    version: 0.5.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -790,7 +790,7 @@ components:
 
         TimelineEventType:
             type: string
-            enum: [SURGERY, PROCEDURE, IMAGING, PROVIDER_VISIT, LAB_REPORT, PATHOLOGY, BIOMARKER]
+            enum: [SURGERY, PROCEDURE, IMAGING, PROVIDER_VISIT, LAB_REPORT, PATHOLOGY, BIOMARKER, NLP_ED_VISIT]
 
         TimelineEvent:
             type: object
@@ -819,6 +819,7 @@ components:
                     LAB_REPORT: "#/components/schemas/TimelineEventLabReport"
                     PATHOLOGY: "#/components/schemas/TimelineEventPathology"
                     BIOMARKER: "#/components/schemas/TimelineEventBiomarker"
+                    NLP_ED_VISIT: "#/components/schemas/TimelineEventNlpEdVisit"
         TimelineEventAggregate:
             oneOf:
                 - $ref: "#/components/schemas/TimelineEventSurgery"
@@ -828,6 +829,7 @@ components:
                 - $ref: "#/components/schemas/TimelineEventLabReport"
                 - $ref: "#/components/schemas/TimelineEventPathology"
                 - $ref: "#/components/schemas/TimelineEventBiomarker"
+                - $ref: "#/components/schemas/TimelineEventNlpEdVisit"
 
         TimelineEventSurgery:
             allOf:
@@ -884,6 +886,24 @@ components:
                           description: The provider(s) who authored the document associated with this provider visit.
                           items: { $ref: "#/components/schemas/DocumentAuthor" }
                   required: [ documentProviderAuthors ]
+
+        TimelineEventNlpEdVisit:
+            allOf:
+                -   $ref: "#/components/schemas/TimelineEvent"
+                -   type: object
+                    properties:
+                        additionalFields: { $ref: "#/components/schemas/TimelineEventNlpEdVisitAdditionalFields" }
+                    required: [ additionalFields ]
+        TimelineEventNlpEdVisitAdditionalFields:
+            allOf:
+                -   type: object
+                    properties:
+                        documentIds:
+                            type: array
+                            items:
+                                type: string
+                    required: [ documentIds ]
+
         DocumentAuthor:
             type: object
             description: The author of a document
