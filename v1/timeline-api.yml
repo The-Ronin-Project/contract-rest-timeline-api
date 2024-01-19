@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.3.2
+    version: 0.4.2
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -790,7 +790,7 @@ components:
 
         TimelineEventType:
             type: string
-            enum: [SURGERY, PROCEDURE, IMAGING, PROVIDER_VISIT, LAB_REPORT]
+            enum: [SURGERY, PROCEDURE, IMAGING, PROVIDER_VISIT, LAB_REPORT, PATHOLOGY, BIOMARKER]
 
         TimelineEvent:
             type: object
@@ -817,6 +817,8 @@ components:
                     IMAGING: "#/components/schemas/TimelineEventImaging"
                     PROVIDER_VISIT: "#/components/schemas/TimelineEventProviderVisit"
                     LAB_REPORT: "#/components/schemas/TimelineEventLabReport"
+                    PATHOLOGY: "#/components/schemas/TimelineEventPathology"
+                    BIOMARKER: "#/components/schemas/TimelineEventBiomarker"
         TimelineEventAggregate:
             oneOf:
                 - $ref: "#/components/schemas/TimelineEventSurgery"
@@ -824,6 +826,8 @@ components:
                 - $ref: "#/components/schemas/TimelineEventImaging"
                 - $ref: "#/components/schemas/TimelineEventProviderVisit"
                 - $ref: "#/components/schemas/TimelineEventLabReport"
+                - $ref: "#/components/schemas/TimelineEventPathology"
+                - $ref: "#/components/schemas/TimelineEventBiomarker"
 
         TimelineEventSurgery:
             allOf:
@@ -903,6 +907,44 @@ components:
                 # This meaningless second object in the allOf is a hack so the Kotlin generator makes a proper
                 # TimelineEventSurgeryAdditionalFields class since if we just reference WithDocumentId it won't.
                 - type: object
+
+        TimelineEventPathology:
+            allOf:
+                -   $ref: "#/components/schemas/TimelineEvent"
+                -   type: object
+                    properties:
+                        additionalFields: { $ref: "#/components/schemas/TimelineEventPathologyAdditionalFields" }
+                    required: [ additionalFields ]
+        TimelineEventPathologyAdditionalFields:
+            allOf:
+                -   $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                -   $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+                -   type: object
+                    properties:
+                        documentPhysicianAuthors:
+                            type: array
+                            description: The physician(s) who authored the document associated with this pathology report.
+                            items: { $ref: "#/components/schemas/DocumentAuthor" }
+                    required: [ documentPhysicianAuthors ]
+
+        TimelineEventBiomarker:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEvent"
+                - type: object
+                  properties:
+                      additionalFields: { $ref: "#/components/schemas/TimelineEventBiomarkerAdditionalFields" }
+                  required: [ additionalFields ]
+        TimelineEventBiomarkerAdditionalFields:
+            allOf:
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithDocumentId"
+                - $ref: "#/components/schemas/TimelineEventAdditionalFieldsWithLabel"
+                - type: object
+                  properties:
+                      documentPhysicianAuthors:
+                          type: array
+                          description: The physician(s) who authored the document associated with this biomarker report.
+                          items: { $ref: "#/components/schemas/DocumentAuthor" }
+                  required: [ documentPhysicianAuthors ]
 
         TimelineEventAdditionalFieldsWithDocumentId:
             type: object
