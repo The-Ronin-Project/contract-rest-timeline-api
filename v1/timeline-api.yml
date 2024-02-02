@@ -676,6 +676,7 @@ components:
                 - observationId
                 - date
                 - value
+                - sourceType
             properties:
                 typeId:
                     type: string
