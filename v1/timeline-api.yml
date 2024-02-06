@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.6.0
+    version: 0.7.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -185,29 +185,8 @@ paths:
             tags:
                 - Timeline Symptoms
             summary: Get symptom timeline events
-            description: Get all timeline events where (a) the timeline timestamp is between
-                the specified start & end timestamps, and (b) where the timeline event type
-                is `symptoms`.
+            description: Get all timeline events where the timeline event type is `symptoms`.
             operationId: getSymptomTimelineEvents
-            parameters:
-                - name: start
-                  in: query
-                  description: UTC timestamp representing the (inclusive) starting point of
-                      the date range by which to query timeline events. If not provided, no lower limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2023-01-01T00:00:01Z'
-                - name: end
-                  in: query
-                  description: UTC timestamp representing the (exclusive) ending point of the
-                      date range by which to query timeline events. If not provided, no upper limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2024-01-01T00:00:01Z'
             responses:
                 '200':
                     description: Successful operation
@@ -247,29 +226,8 @@ paths:
             tags:
                 - Timeline Vitals
             summary: Get vitals timeline events
-            description: Get all timeline events where (a) the timeline timestamp is between
-                the specified start & end timestamps, and (b) where the timeline event type
-                is `vitals`.
+            description: Get all timeline events where the timeline event type is `vitals`.
             operationId: getVitalsTimelineEvents
-            parameters:
-                - name: start
-                  in: query
-                  description: UTC timestamp representing the (inclusive) starting point of
-                      the date range by which to query timeline events. If not provided, no lower limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2023-01-01T00:00:01Z'
-                - name: end
-                  in: query
-                  description: UTC timestamp representing the (exclusive) ending point of the
-                      date range by which to query timeline events. If not provided, no upper limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2024-01-01T00:00:01Z'
             responses:
                 '200':
                     description: Successful operation
@@ -311,29 +269,8 @@ paths:
             tags:
                 - Timeline Labs
             summary: Get labs timeline events
-            description: Get all lab events where (a) the timeline timestamp is between
-                the specified start & end timestamps, and (b) where the timeline event type
-                is `labs`.
+            description: Get all lab events where the timeline event type is `labs`.
             operationId: getLabsTimelineEvents
-            parameters:
-                - name: start
-                  in: query
-                  description: UTC timestamp representing the (inclusive) starting point of
-                      the date range by which to query timeline events. If not provided, no lower limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2023-01-01T00:00:01Z'
-                - name: end
-                  in: query
-                  description: UTC timestamp representing the (exclusive) ending point of the
-                      date range by which to query timeline events. If not provided, no upper limit will be defined.
-                  required: false
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2024-01-01T00:00:01Z'
             responses:
                 '200':
                     description: Successful operation
@@ -379,25 +316,6 @@ paths:
                 Retrieves "generic" timeline events. In practice, this is all of the timeline events that don't have
                 their own endpoints (i.e. labs, vitals, and symptoms are _not_ included in this endpoint).
             operationId: getTimelineEvents
-            parameters:
-                - name: start
-                  in: query
-                  description: > 
-                    Date representing the (inclusive) starting point of the date range by which to query timeline events
-                  required: true
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2023-01-01T06:00:00Z'
-                - name: end
-                  in: query
-                  description: >
-                    Date representing the (exclusive) ending point of the date range by which to query timeline events.
-                  required: true
-                  schema:
-                      type: string
-                      format: date-time
-                      example: '2025-01-01T06:00:00Z'
             responses:
                 '200':
                     description: Successful operation
@@ -473,7 +391,7 @@ components:
                     properties:
                         self:
                             type: string
-                            example: "/api/v1/tenants/apposnd/patients/apposnd-43211234/timeline/symptoms?start=2023-01-01T00:00:01Z&end=2023-03-01T00:00:01Z"
+                            example: "/api/v1/tenants/apposnd/patients/apposnd-43211234/timeline/symptoms"
                 data:
                     type: array
                     items:
