@@ -575,8 +575,8 @@ components:
                     type: array
                     description: >
                         The value(s) of this vital. Note that only blood pressure will ever have more than one value, in
-                        which case the order will always be [systolic, diastolic]. Additionally, the valueType can be 
-                        used to know which blood pressure component the value is for (i.e. systolic vs diastolic).
+                        which case the valueType should be used to know which blood pressure component the value is for 
+                        (i.e. systolic vs diastolic).
                     items:
                         $ref: "#/components/schemas/VitalValue"
         VitalValue:
