@@ -16,7 +16,7 @@ info:
     contact:
         name: Team APEX (in Slack)
         url: https://projectronin.slack.com/archives/C03QLMWKE12
-    version: 0.7.0
+    version: 1.0.0
 externalDocs:
     description: Find out more about Timeline Service
     url: https://projectronin.atlassian.net/wiki/spaces/ENG/pages/1990393974/Timeline+Service
@@ -602,15 +602,6 @@ components:
                     type: string
                     example: '100'
                     description: The upper boundary of the ref range, if there is one.
-                interpretation:
-                    type: string
-                    example: 'N'
-                    description: >
-                        The interpretation of the ref range, if there is one. Either N, L, H, or empty.
-                        
-                        This is deprecated and should no longer be used since it is incomplete. Use 
-                        interpretationDetails instead.
-                    deprecated: true
                 interpretationDetails:
                     $ref: "#/components/schemas/InterpretationDetails"
                 sourceType:
@@ -663,15 +654,6 @@ components:
                 high:
                     type: string
                     example: '100'
-                interpretation:
-                    type: string
-                    example: 'N'
-                    description: >
-                        The interpretation of the ref range, if there is one. Either N, L, H, or empty.
-                    
-                        This is deprecated and should no longer be used since it is incomplete. Use
-                        interpretationDetails instead.
-                    deprecated: true
                 interpretationDetails:
                     $ref: "#/components/schemas/InterpretationDetails"
                 sourceType:
